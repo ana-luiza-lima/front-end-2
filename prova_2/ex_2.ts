@@ -52,6 +52,47 @@ abstract class Midia {
         return `Título: ${this.titulo}, Cópias Disponíveis: ${this.copias}`
     }
 
+    alugar(cliente: Cliente): boolean {
+        if(this.copias <= 0){
+            return false
+        }
+        const aluguelAtual = this.alugueis.some(aluguel => aluguel.cliente.codigo === cliente.codigo)
+        if(aluguelAtual){
+            return false
+        }
+
+        this.copias -= 1
+        const novoAluguel = {cliente: cliente, dataAluguel: new Date()} // Definir uma nova data com new Date()
+        this.alugueis.push(novoAluguel)
+        return true
+    } 
+
+    abstract devolver(cliente: Cliente): number
+}
+
+class Filme extends Midia {
+    private elenco: Artista[]
+
+    constructor(titulo: string, copias: number, artistas: Artista[]){
+        super(titulo, copias)
+        this.elenco = artistas
+    }
+
+    devolver(cliente: Cliente): number {
+        const indiceAlguel = this.alugueis.findIndex(aluguel => aluguel.cliente === cliente)
+        if(indiceAlguel === -1) return -1
+
+        this.copias++
+
+        const diferencaMs = Date.now() - this.alugueis[indiceAlguel].dataAluguel.getTime()
+        const diasAlguel = diferencaMs / (1000 * 60 * 60 * 24)
+
+        const atraso = diasAlguel > 5 ? diasAlguel - 5 : 0
+        const multa = atraso * 3
+
+        this.alugueis.splice(indiceAlguel, 1)
+        return multa
+    }
 }
 
 interface Artista {
