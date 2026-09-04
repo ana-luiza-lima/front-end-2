@@ -22,3 +22,20 @@ const removerContato = (id) => {
     agenda = agendaFiltrada
     return true
 }
+
+const buscarContato = (nome) => {
+    const busca = agenda.find(contato => contato.nome.toLowerCase() === nome.toLowerCase()) //método find retorna undefined se não encontra
+    if(!busca){
+        return null
+    }
+    return busca
+}
+
+const listarContatos = () => {
+    const lista = agenda.map(contato => `ID: ${contato.id}, Nome: ${contato.nome}, Telefone: ${contato.telefone}`)
+    return lista
+}
+
+const limparAgenda = () => {
+    agenda.length = 0
+}
